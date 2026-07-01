@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이음(IEUM) 케어 - 공공형 여성 위생용품 통합 플랫폼</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts Inter & Noto Sans KR -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* pulse animation for dispenser stock status */
+        @keyframes pulse-gentle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+        .pulse-active {
+            animation: pulse-gentle 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-rose-100 sticky top-0 z-40 shadow-sm transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('market')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center text-white shadow-md shadow-rose-200">
+                        <!-- flower-2 SVG inline -->
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3" />
+                            <path stroke-linecap="round" d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4zM12 22a4 4 0 0 0 4-4v-1a4 4 0 0 0-8 0v1a4 4 0 0 0 4 4zM2 12a4 4 0 0 0 4 4h1a4 4 0 0 0 0-8H6a4 4 0 0 0-4 4zM22 12a4 4 0 0 0-4-4h-1a4 4 0 0 0 0 8h1a4 4 0 0 0 4-4z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-xl tracking-tight text-slate-900">이음<span class="text-rose-500 font-medium">케어</span></span>
+                            <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded-full font-medium border border-rose-100">공공 D2C 모델</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 -mt-0.5">여성 건강권 보장 및 중소 상생 생태계</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu Tabs -->
+                <nav class="hidden md:flex space-x-1 bg-slate-100 p-1 rounded-xl">
+                    <button onclick="switchTab('market')" id="tab-btn-market" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 flex items-center space-x-2 bg-white text-rose-600 shadow-sm">
+                        <!-- shopping-bag SVG inline -->
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        <span>D2C 상생 마켓</span>
+                    </button>
+                    <button onclick="switchTab('map')" id="tab-btn-map" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                        <!-- map-pin SVG inline -->
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="1.5"/></svg>
+                        <span>안심 지도 (긴급제공)</span>
+                    </button>
+                    <button onclick="switchTab('voucher')" id="tab-btn-voucher" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                        <!-- wallet SVG inline -->
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                        <span>바우처 결제</span>
+                    </button>
+                    <button onclick="switchTab('data')" id="tab-btn-data" class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                        <!-- bar-chart-3 SVG inline -->
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
+                        <span>품질 데이터 피드백</span>
+                    </button>
+                </nav>
+
+                <!-- Right Side Info -->
+                <div class="flex items-center space-x-4">
+                    <!-- Voucher Indicator -->
+                    <div class="hidden sm:flex items-center space-x-2 bg-rose-50 border border-rose-100 rounded-xl px-3.5 py-1.5">
+                        <!-- sparkles SVG inline -->
+                        <svg class="w-4 h-4 text-rose-500 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                        <span class="text-xs font-semibold text-rose-700">바우처 잔액: <span id="voucher-header-balance">14,000</span>원</span>
+                    </div>
+
+                    <!-- Cart Toggle -->
+                    <button onclick="toggleCartDrawer()" class="relative p-2 text-slate-600 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all duration-150">
+                        <!-- shopping-cart SVG inline -->
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-40 flex justify-around py-2.5 shadow-lg">
+        <button onclick="switchTab('market')" id="m-tab-btn-market" class="flex flex-col items-center space-y-1 text-rose-500 transition-colors duration-150">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <span class="text-[10px] font-medium">상생마켓</span>
+        </button>
+        <button onclick="switchTab('map')" id="m-tab-btn-map" class="flex flex-col items-center space-y-1 text-slate-400 transition-colors duration-150">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="1.5"/></svg>
+            <span class="text-[10px] font-medium">안심지도</span>
+        </button>
+        <button onclick="switchTab('voucher')" id="m-tab-btn-voucher" class="flex flex-col items-center space-y-1 text-slate-400 transition-colors duration-150">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+            <span class="text-[10px] font-medium">바우처결제</span>
+        </button>
+        <button onclick="switchTab('data')" id="m-tab-btn-data" class="flex flex-col items-center space-y-1 text-slate-400 transition-colors duration-150">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
+            <span class="text-[10px] font-medium">데이터피드백</span>
+        </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-12">
+
+        <!-- Banner Notification -->
+        <div class="bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl p-5 mb-8 text-white relative overflow-hidden shadow-lg shadow-rose-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-rose-400 rounded-full opacity-30 blur-2xl"></div>
+            <div class="absolute right-1/4 top-0 w-24 h-24 bg-white rounded-full opacity-10 blur-xl"></div>
+            
+            <div class="z-10">
+                <div class="flex items-center space-x-2 bg-rose-400/30 text-rose-100 px-2.5 py-1 rounded-full text-xs font-semibold w-max mb-2">
+                    <span class="w-2 h-2 rounded-full bg-rose-200 animate-ping"></span>
+                    <span>산업부 공공데이터 협력 모델</span>
+                </div>
+                <h2 class="text-xl md:text-2xl font-bold tracking-tight">여성 건강권의 건강한 연결, 이음(IEUM) 케어가 상생합니다</h2>
+                <p class="text-xs text-rose-100 mt-1">대기업의 가격 거품을 걷어내어 전 국민의 부담을 낮추고 국내 우수 중소·OEM 기업의 도약을 지원합니다.</p>
+            </div>
+            <div class="z-10 flex items-center space-x-2 shrink-0">
+                <button onclick="switchTab('map')" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150">
+                    내 주변 긴급 생리대 찾기
+                </button>
+                <button onclick="switchTab('market')" class="bg-white text-rose-600 hover:bg-rose-50 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-150 shadow-md">
+                    착한 직거래 쇼핑하기
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab 1: D2C 상생 마켓 -->
+        <section id="section-market" class="block">
+            <!-- Filter & Search Bar -->
+            <div class="bg-white rounded-2xl p-4 mb-6 shadow-sm border border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-2 w-full sm:w-auto">
+                    <span class="text-sm font-semibold text-slate-500 shrink-0">제품 카테고리 :</span>
+                    <div class="flex space-x-1.5 overflow-x-auto py-1 custom-scrollbar">
+                        <button onclick="filterCategory('all')" id="cat-all" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-500 text-white transition-all duration-150">전체</button>
+                        <button onclick="filterCategory('organic')" id="cat-organic" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all duration-150">유기농 순면</button>
+                        <button onclick="filterCategory('ultra')" id="cat-ultra" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all duration-150">강력 흡수</button>
+                        <button onclick="filterCategory('tampon')" id="cat-tampon" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all duration-150">탐폰/생리컵</button>
+                    </div>
+                </div>
+
+                <!-- Price Comparison Info Box Toggle -->
+                <div class="text-xs text-rose-600 bg-rose-50 border border-rose-100 px-3 py-2 rounded-xl flex items-center space-x-1.5 w-full sm:w-auto">
+                    <svg class="w-4 h-4 text-rose-500 shrink-0 mr-1.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                    <span><strong>공공 단가 안내:</strong> 참가격 비교 분석 결과, 이음 케어 입점 제품 평균 가격은 대기업 대비 약 <strong>38% 저렴</strong>합니다.</span>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="product-container">
+                <!-- Products will be dynamically generated by JS -->
+            </div>
+        </section>
+
+        <!-- Tab 2: 안심 지도 (긴급무료자판기) -->
+        <section id="section-map" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Map View Simulated (Left side) -->
+                <div class="lg:col-span-8 bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col h-[500px]">
+                    <div class="flex items-center justify-between mb-3 shrink-0">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <h3 class="font-bold text-slate-800 text-base">긴급 무료생리대 자판기 위치 (서울시 성동구 연계 모형)</h3>
+                        </div>
+                        <span class="text-xs text-slate-400">지자체 공공데이터 실시간 동기화</span>
+                    </div>
+
+                    <!-- Simulated Interactive SVG Map Area -->
+                    <div class="bg-rose-50/40 rounded-xl flex-grow border border-rose-100 relative overflow-hidden flex items-center justify-center">
+                        <div class="absolute inset-0 bg-[radial-gradient(#e11d48_0.8px,transparent_0.8px)] [background-size:16px_16px] opacity-10"></div>
+                        
+                        <!-- Map Grid Layout Visual -->
+                        <div class="absolute w-full h-full flex flex-col justify-around p-8">
+                            <div class="flex justify-between text-[11px] text-slate-400 border-b border-dashed border-rose-200/40 pb-4">
+                                <span>성동구청 북측 주거구역</span>
+                                <span>성동세무서 방면</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] text-slate-400 border-b border-dashed border-rose-200/40 pb-4">
+                                <span>왕십리역 상업중심구역</span>
+                                <span>성동교 삼거리</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] text-slate-400">
+                                <span>한양대학교 일대</span>
+                                <span>서울숲 생태공원 주거 벨트</span>
+                            </div>
+                        </div>
+
+                        <!-- Mock Map Roads Visuals -->
+                        <div class="absolute w-1.5 h-full bg-white opacity-40 left-1/3 transform -rotate-12"></div>
+                        <div class="absolute w-1.5 h-full bg-white opacity-40 left-2/3 transform rotate-45"></div>
+                        <div class="absolute h-1.5 w-full bg-white opacity-40 top-1/2"></div>
+
+                        <!-- Map Pins Indicators -->
+                        <!-- Pin 1: 성동구립도서관 -->
+                        <div onclick="selectDispenser(1)" class="absolute top-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group z-10">
+                            <div class="bg-emerald-500 text-white p-2 rounded-full shadow-lg hover:bg-emerald-600 transition-all duration-150 flex items-center justify-center pulse-active">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </div>
+                            <span class="absolute top-10 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-md text-[10px] font-bold shadow-sm whitespace-nowrap border border-slate-100">성동구립도서관 (여유)</span>
+                        </div>
+
+                        <!-- Pin 2: 성동구청 종합민원실 -->
+                        <div onclick="selectDispenser(2)" class="absolute top-1/3 left-2/3 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group z-10">
+                            <div class="bg-amber-500 text-white p-2 rounded-full shadow-lg hover:bg-amber-600 transition-all duration-150 flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </div>
+                            <span class="absolute top-10 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-md text-[10px] font-bold shadow-sm whitespace-nowrap border border-slate-100">성동구청 종합민원실 (보통)</span>
+                        </div>
+
+                        <!-- Pin 3: 왕십리역 지하상가 동편 -->
+                        <div onclick="selectDispenser(3)" class="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group z-10">
+                            <div class="bg-rose-500 text-white p-2 rounded-full shadow-lg hover:bg-rose-600 transition-all duration-150 flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </div>
+                            <span class="absolute top-10 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-md text-[10px] font-bold shadow-sm whitespace-nowrap border border-slate-100">왕십리역 지하광장 (품절)</span>
+                        </div>
+
+                        <!-- Click notice inside map -->
+                        <div class="absolute bottom-4 right-4 bg-slate-900/80 text-white px-3 py-1.5 rounded-lg text-[10px] font-medium flex items-center space-x-1">
+                            <svg class="w-3.5 h-3.5 text-white mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                            <span>지도의 마커를 클릭하여 실시간 정보를 조회하세요</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dispenser Detail Information Panel (Right side) -->
+                <div class="lg:col-span-4 flex flex-col gap-4">
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex-grow">
+                        <div class="flex items-center space-x-2 pb-3 border-b border-slate-100 mb-4">
+                            <!-- landmark SVG inline -->
+                            <svg class="w-5 h-5 text-rose-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 22v-6M21 22v-6M12 2v4M12 22V10M12 6H3M12 6h9M3 10h18M3 14h18"/></svg>
+                            <h3 class="font-bold text-slate-800 text-base">선택 시설 상세 정보</h3>
+                        </div>
+
+                        <div id="dispenser-placeholder" class="text-center py-16 text-slate-400 text-xs">
+                            <!-- map-pin-off SVG inline -->
+                            <svg class="w-12 h-12 mx-auto mb-3 opacity-30 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2c5.523 0 10 4.477 10 10a9.957 9.957 0 01-1.604 5.394l-1.422-1.423a8 8 0 001.026-3.971 8 8 0 10-14.743 4.148l-1.455-1.455A9.96 9.96 0 012 12c0-5.523 4.477-10 10-10z"/><path d="m3 3 18 18"/></svg>
+                            <p>선택된 무료제공시설이 없습니다.</p>
+                            <p class="mt-1">지도 위의 녹색/황색 마커를 클릭해 보세요.</p>
+                        </div>
+
+                        <div id="dispenser-detail" class="hidden space-y-4">
+                            <div>
+                                <h4 class="text-xs text-slate-400 uppercase font-bold">시설 명칭</h4>
+                                <p class="text-lg font-bold text-slate-800" id="disp-title">성동구립도서관</p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-slate-50 p-3 rounded-xl">
+                                    <span class="text-[10px] text-slate-400 font-medium block">자판기 실시간 재고</span>
+                                    <div class="flex items-center space-x-1.5 mt-1">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500" id="disp-stock-color"></span>
+                                        <span class="text-sm font-bold text-slate-700" id="disp-stock">여유 (18개)</span>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-xl">
+                                    <span class="text-[10px] text-slate-400 font-medium block">자판기 고유번호</span>
+                                    <span class="text-xs font-bold text-slate-700 mt-1 block" id="disp-id">SD-LIB-01</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="flex items-center space-x-2 text-xs text-slate-600">
+                                    <!-- clock SVG inline -->
+                                    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                    <span id="disp-hours">09:00 - 22:00 (도서관 휴관일 외 상시)</span>
+                                </div>
+                                <div class="flex items-center space-x-2 text-xs text-slate-600">
+                                    <!-- navigation SVG inline -->
+                                    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+                                    <span id="disp-loc">2층 여자화장실 입구 및 수유실 옆 안심 자판기</span>
+                                </div>
+                            </div>
+
+                            <!-- Guide alert for free pad dispenser usage -->
+                            <div class="bg-slate-50 rounded-xl p-3 border border-slate-150 text-[11px] text-slate-500">
+                                <span class="font-bold text-slate-700 block mb-1">💡 긴급 무료 자판기 이용 가이드</span>
+                                소득·연령 조건에 상관없이 긴급한 생리대 수급이 필요한 국민 누구나 차별없이 무료로 다이렉트 자판기 이용번호를 누르고 즉시 무료 발급이 가능합니다.
+                            </div>
+
+                            <!-- Simulate Navigation Route Button -->
+                            <button onclick="showToast('안내 서비스', '현재 위치에서 해당 공공 무료 제공 시설까지 모바일 도보 길안내를 개시합니다.')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs transition-colors duration-150 flex items-center justify-center space-x-2">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+                                <span>길찾기 내비게이션 개시 (모바일 연결)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 3: 바우처 전용 결제 시뮬레이터 -->
+        <section id="section-voucher" class="hidden">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 max-w-3xl mx-auto">
+                <div class="flex items-center space-x-3 pb-4 border-b border-slate-100 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center text-white">
+                        <!-- wallet SVG inline -->
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">정부 여성청소년 생리용품 바우처 결제 가이드</h3>
+                        <p class="text-xs text-slate-400">여성가족부 & 지자체 보편지원금 온라인 원스톱 연동 결제 채널</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Voucher Card UI representation -->
+                    <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-md relative overflow-hidden max-w-md mx-auto">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-rose-500/20 rounded-full blur-xl"></div>
+                        <div class="flex justify-between items-start mb-8">
+                            <div>
+                                <span class="text-[10px] text-slate-400 font-bold block">국가 통합 복지 지원 바우처</span>
+                                <h4 class="font-bold text-base mt-1 text-rose-300">국민행복 바우처 카드</h4>
+                            </div>
+                            <!-- credit-card SVG inline -->
+                            <svg class="w-8 h-8 text-slate-400 opacity-60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-sm font-mono tracking-widest text-slate-200">**** - **** - **** - 2026</p>
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <span class="text-[9px] text-slate-400 uppercase block">수혜 대상자 본인명</span>
+                                    <span class="text-xs font-bold text-slate-200">이음 안심 케어 (보편형 UI)</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[9px] text-slate-400 uppercase block">실시간 한도 잔액</span>
+                                    <span class="text-base font-bold text-rose-400"><span id="voucher-card-balance">14,000</span>원</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step description list with sleek UI -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-slate-800 text-sm flex items-center space-x-2">
+                            <span class="w-1.5 h-4 bg-rose-500 rounded-full"></span>
+                            <span>이음 케어만의 ‘편견 차단’ 온라인 결제 장점</span>
+                        </h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start space-x-3">
+                                <div class="bg-rose-100 text-rose-600 p-2.5 rounded-lg shrink-0 font-bold">1</div>
+                                <div>
+                                    <span class="font-bold text-slate-700 block mb-1">지정 사용처 제약 완벽 해소</span>
+                                    동네 편의점이나 몇 안 되는 오프라인 대형몰에 묶여있던 지원 한도 포인트를 모바일 플랫폼에서 손쉽게 비교하여 자유롭게 원하는 중소·OEM 위생용품을 전액 포인트로 결제할 수 있습니다.
+                                </div>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start space-x-3">
+                                <div class="bg-rose-100 text-rose-600 p-2.5 rounded-lg shrink-0 font-bold">2</div>
+                                <div>
+                                    <span class="font-bold text-slate-700 block mb-1">낙인 효과 차단 보편형 UI/UX</span>
+                                    바우처 수혜 전용임을 식별하는 낙인 표식을 일절 배제한 보편적 일반 결제 UI를 탑재하여, 지원 대상자의 심리적 편안함과 구매 품위 권리를 완벽 보장합니다.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick simulation button to reload voucher for testing -->
+                    <div class="flex justify-center shrink-0 pt-2">
+                        <button onclick="resetVoucherSimulation()" class="px-5 py-2.5 bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 rounded-xl text-xs font-semibold transition-all duration-150 flex items-center space-x-2">
+                            <!-- rotate-ccw SVG inline -->
+                            <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                            <span>바우처 모의 충전하기 (바우처 리프레시 테스트)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: 품질 데이터 대시보드 -->
+        <section id="section-data" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Main Statistics -->
+                <div class="lg:col-span-8 bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
+                        <div class="flex items-center space-x-2">
+                            <!-- bar-chart SVG inline -->
+                            <svg class="w-5 h-5 text-rose-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
+                            <h3 class="font-bold text-slate-800 text-base">중소·OEM 제조기업 품질 개선 데이터 흐름</h3>
+                        </div>
+                        <span class="text-xs bg-rose-50 text-rose-600 font-semibold px-2 py-1 rounded-full border border-rose-100">데이터 상생 환류</span>
+                    </div>
+
+                    <!-- Key stats counters row -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-slate-50 p-4 rounded-xl text-center">
+                            <span class="text-[10px] text-slate-400 font-medium block">수집된 누적 소비자 리뷰</span>
+                            <span class="text-2xl font-bold text-slate-800 mt-1 block">48,203건</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl text-center">
+                            <span class="text-[10px] text-slate-400 font-medium block">안전 기준 합격 인증 비율</span>
+                            <span class="text-2xl font-bold text-emerald-600 mt-1 block">100% (적합)</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl text-center">
+                            <span class="text-[10px] text-slate-400 font-medium block">제조사 전송 품질 피드백 수</span>
+                            <span class="text-2xl font-bold text-rose-500 mt-1 block">154개 공장</span>
+                        </div>
+                    </div>
+
+                    <!-- Review Analysis Keywords cloud (Interactive mock metrics) -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-sm text-slate-700 flex items-center space-x-1.5">
+                            <!-- activity SVG inline -->
+                            <svg class="w-4 h-4 text-rose-500 mr-1.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                            <span>실시간 소비자 품질 평가 긍정 키워드 맵 (자연어 처리 결과)</span>
+                        </h4>
+
+                        <div class="p-5 bg-rose-50/20 border border-rose-100/50 rounded-xl flex flex-wrap gap-2 justify-center items-center min-h-[160px]">
+                            <span class="text-lg font-bold text-rose-600 bg-rose-100/70 px-4 py-2 rounded-xl border border-rose-200/50 shadow-sm transition-transform duration-150 hover:scale-105 cursor-pointer">가성비 대만족 (94%)</span>
+                            <span class="text-sm font-semibold text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm transition-transform duration-150 hover:scale-105 cursor-pointer">피부 발진 제로</span>
+                            <span class="text-base font-bold text-rose-500 bg-white px-3.5 py-2 rounded-xl border border-rose-100 shadow-sm transition-transform duration-150 hover:scale-105 cursor-pointer">유기농 순면 부드러움</span>
+                            <span class="text-xs font-medium text-slate-500 bg-white px-2.5 py-1 rounded-md border border-slate-100 transition-transform duration-150 hover:scale-105 cursor-pointer">정기배송 간편함</span>
+                            <span class="text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100 transition-transform duration-150 hover:scale-105 cursor-pointer">샘 걱정 방지 (98%)</span>
+                            <span class="text-xs font-medium text-slate-500 bg-white px-2.5 py-1 rounded-md border border-slate-100 transition-transform duration-150 hover:scale-105 cursor-pointer">낱개 가격 합리적</span>
+                            <span class="text-sm font-medium text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-100 transition-transform duration-150 hover:scale-105 cursor-pointer">탐폰 어플리케이터 부드러움</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side Information Panels -->
+                <div class="lg:col-span-4 flex flex-col gap-4">
+                    <!-- OEM/SME Support Card Info -->
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                        <div class="flex items-center space-x-2 pb-3 border-b border-slate-100 mb-4">
+                            <!-- git-merge SVG inline -->
+                            <svg class="w-5 h-5 text-rose-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 9v9a3 3 0 003 3h6M18 15V9a3 3 0 00-3-3H9"/></svg>
+                            <h3 class="font-bold text-slate-800 text-sm">소비자 ➔ 중소공장 순환 고리</h3>
+                        </div>
+
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            이음 케어는 단순 판매 채널이 아닙니다. 플랫폼에 축적된 소비자의 <strong>'안전성, 흡수력, 피부 자극, 재구매율'</strong> 데이터를 인공지능이 분석하여 입점된 국내 우수 중소·OEM 기업들에게 분기별 고도화 품질 분석 리포트로 무상 수급합니다. 중소기업은 마케팅 비용과 수요예측 실패를 줄이고, 제품 개선에만 전념할 수 있습니다.
+                        </p>
+
+                        <!-- Visual connection flow -->
+                        <div class="mt-4 p-3 bg-slate-50 rounded-xl space-y-2 border border-slate-150">
+                            <div class="flex justify-between text-[11px] font-bold text-slate-600">
+                                <span>1. 소비자 실구매 리뷰</span>
+                                <span class="text-rose-500">→</span>
+                                <span>2. AI 긍/부정 필터</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] font-bold text-slate-600">
+                                <span>3. 공장 제품별 매칭</span>
+                                <span class="text-rose-500">→</span>
+                                <span>4. 중소기업 품질 개선</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Cart Sliding Sidebar Drawer -->
+    <div id="cart-drawer-overlay" class="fixed inset-0 bg-slate-900/40 opacity-0 pointer-events-none transition-all duration-300 z-50" onclick="toggleCartDrawer()"></div>
+    <div id="cart-drawer" class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 z-50 flex flex-col">
+        <!-- Drawer Header -->
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+            <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <h3 class="font-bold text-slate-800 text-base">선택한 장바구니 및 정기구독</h3>
+            </div>
+            <button onclick="toggleCartDrawer()" class="p-1 rounded-full hover:bg-slate-200 text-slate-500 transition-colors">
+                <!-- x SVG inline -->
+                <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Drawer Body (Items List) -->
+        <div class="flex-grow overflow-y-auto p-4 custom-scrollbar space-y-4" id="cart-items-list">
+            <!-- Dynamic items inside -->
+        </div>
+
+        <!-- Drawer Footer (Pricing & Checkout) -->
+        <div class="p-4 border-t border-slate-100 bg-slate-50 shrink-0 space-y-4">
+            <!-- Delivery frequency selector for subscriptions -->
+            <div id="frequency-selector-box" class="hidden">
+                <label class="text-[11px] font-semibold text-slate-500 block mb-1">📅 정기 배송 주기 선택</label>
+                <select id="sub-frequency" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-rose-500">
+                    <option value="4">매월 1회 배송 (권장)</option>
+                    <option value="8">2개월 1회 배송</option>
+                    <option value="12">3개월 1회 배송</option>
+                </select>
+            </div>
+
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between text-slate-600">
+                    <span>주문 총액</span>
+                    <span id="cart-subtotal">0원</span>
+                </div>
+                <div id="discount-row" class="flex justify-between text-emerald-600 font-semibold hidden">
+                    <span>정기구독 특별 할인 (10%)</span>
+                    <span id="cart-discount">-0원</span>
+                </div>
+                <div class="flex justify-between text-slate-600">
+                    <span>배송비</span>
+                    <span class="text-emerald-500 font-semibold">이음 공공 무료배송</span>
+                </div>
+                <div class="flex justify-between text-base font-bold text-slate-800 pt-2 border-t border-dashed border-slate-200">
+                    <span>최종 결제 예정 금액</span>
+                    <span id="cart-total" class="text-rose-500">0원</span>
+                </div>
+            </div>
+
+            <!-- Choose Payment Method Simulated -->
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button onclick="setPaymentMethod('normal')" id="pay-normal" class="py-2.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-all duration-150">
+                    일반 카드 결제
+                </button>
+                <button onclick="setPaymentMethod('voucher')" id="pay-voucher" class="py-2.5 rounded-xl text-xs font-bold border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 transition-all duration-150">
+                    바우처 카드 결제
+                </button>
+            </div>
+
+            <!-- Complete Purchase Button -->
+            <button onclick="checkout()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-150 flex items-center justify-center space-x-2 shadow-lg shadow-rose-100">
+                <!-- check-circle SVG inline -->
+                <svg class="w-4 h-4 text-white mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 11 3 3 6-6"/></svg>
+                <span id="checkout-btn-text">주문 / 결제 완료하기</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification (Custom alert) -->
+    <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl z-50 text-xs font-medium flex items-center space-x-2 transition-all duration-300 opacity-0 pointer-events-none translate-y-2">
+        <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <span id="toast-message">알림 메시지입니다.</span>
+    </div>
+
+    <!-- Scripts Area -->
+    <script>
+        // Simulated Mock Products Database inspired by Korea Consumer Agency "참가격" & SME OEM items
+        const products = [
+            {
+                id: 1,
+                name: "산들 순면 유기농 생리대 (중형 36개입)",
+                category: "organic",
+                brand: "아라 유기농 제약 (SME 우수 제조사)",
+                price: 7900,
+                bigBrandPrice: 13200, // Comparing to the 화이트 Super-Absorb price referenced in proposal
+                spec: "100% 텍사스 유기농 인증 순면 커버 / 샘 방지 날개형 / 24cm",
+                rating: "4.8",
+                reviews: 1420
+            },
+            {
+                id: 2,
+                name: "참고운 데일리 오가닉 패드 (대형 28개입)",
+                category: "organic",
+                brand: "화인 코스메디 (OEM/SME 제조사)",
+                price: 6800,
+                bigBrandPrice: 11800,
+                spec: "에코서트 유기농 순면 탑시트 / 자연 분해 천연 펄프 흡수체 / 28cm",
+                rating: "4.9",
+                reviews: 980
+            },
+            {
+                id: 3,
+                name: "에코케어 맥스 드라이 가드 (오버나이트 16개입)",
+                category: "ultra",
+                brand: "대진 위생화학 (SME 기술 혁신 공장)",
+                price: 5200,
+                bigBrandPrice: 8900,
+                spec: "고성능 순간 흡수 통기 폴리머 탑재 / 역류 제로 가드 / 33cm",
+                rating: "4.7",
+                reviews: 750
+            },
+            {
+                id: 4,
+                name: "안심밀착 탐폰 어플리케이터형 (레귤러 20입)",
+                category: "tampon",
+                brand: "제이앤 케어텍 (국내 순수 탐폰 전문사)",
+                price: 6400,
+                bigBrandPrice: 10400,
+                spec: "부드러운 라운딩 어플리케이터 적용 / 오코텍스 1등급 흡수체",
+                rating: "4.9",
+                reviews: 520
+            },
+            {
+                id: 5,
+                name: "이음 가치산책 친환경 저자극 팬티라이너 (롱 40개입)",
+                category: "organic",
+                brand: "화인 코스메디 (OEM/SME 제조사)",
+                price: 4500,
+                bigBrandPrice: 7900,
+                spec: "저자극 숨쉬는 유기농 면 / 데일리 가벼운 밀착형 / 17.5cm",
+                rating: "4.6",
+                reviews: 320
+            }
+        ];
+
+        // Dispenser real-time stock simulation database
+        const dispensers = {
+            1: {
+                title: "성동구립도서관",
+                stock: "여유 (18개)",
+                stockColor: "bg-emerald-500",
+                id: "SD-LIB-01",
+                hours: "09:00 - 22:00 (도서관 정기 휴관일 외 상시 개방)",
+                loc: "2층 여자화장실 통로 및 수유실 옆 안심 자판기"
+            },
+            2: {
+                title: "성동구청 종합민원실",
+                stock: "보통 (6개)",
+                stockColor: "bg-amber-500",
+                id: "SD-OFF-03",
+                hours: "09:00 - 18:00 (구청 운영 시간 내 개방)",
+                loc: "1층 종합민원실 여직원 휴게실 및 공용 화장실 앞"
+            },
+            3: {
+                title: "왕십리역 지하광장 동편",
+                stock: "품절 (0개 - 보충 예정)",
+                stockColor: "bg-rose-500",
+                id: "SD-STN-02",
+                hours: "05:00 - 익일 01:00 (왕십리 민자역사 개방 및 열차 운행 시)",
+                loc: "2호선 환승 주차장 방면 지하철 연결 화장실 앞 자판기"
+            }
+        };
+
+        // Application Global States
+        let currentTab = 'market';
+        let currentFilter = 'all';
+        let cart = [];
+        let voucherBalance = 14000; // Starting monthly voucher limit from government
+        let paymentMethod = 'voucher'; // 'normal' or 'voucher'
+        let orderType = 'single'; // 'single' or 'subscription'
+
+        // Initialize App on Window Load
+        window.onload = function () {
+            // Render Products
+            renderProducts();
+        };
+
+        // Render Products List to DOM
+        function renderProducts() {
+            const container = document.getElementById('product-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const filtered = currentFilter === 'all' 
+                ? products 
+                : products.filter(p => p.category === currentFilter);
+
+            filtered.forEach(p => {
+                const savePercent = Math.round(((p.bigBrandPrice - p.price) / p.bigBrandPrice) * 100);
+                const unitPrice = Math.round(p.price / parseInt(p.name.match(/\d+개|\d+입/)[0]));
+
+                const cardHtml = `
+                    <div class="bg-white rounded-2xl overflow-hidden border border-slate-150 shadow-sm flex flex-col hover:shadow-md transition-shadow duration-200">
+                        <div class="p-5 flex-grow">
+                            <!-- Category, Brand, SME indicator -->
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-bold">${p.category === 'organic' ? '유기농 순면' : p.category === 'ultra' ? '파워 흡수' : '탐폰/라이너'}</span>
+                                <span class="text-[10px] text-rose-500 font-semibold flex items-center">
+                                    <svg class="w-3 h-3 mr-0.5 text-rose-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg> 국가 검증 완료
+                                </span>
+                            </div>
+                            
+                            <h4 class="font-bold text-slate-800 text-base leading-tight hover:text-rose-500 cursor-pointer mb-1">${p.name}</h4>
+                            <p class="text-[10px] text-slate-400 font-medium mb-3">${p.brand}</p>
+                            
+                            <!-- Price Comparison Component -->
+                            <div class="bg-rose-50/50 rounded-xl p-3 border border-rose-100/30 mb-4">
+                                <div class="flex justify-between items-center text-[11px] text-slate-400 line-through">
+                                    <span>일반 대형 브랜드 가격:</span>
+                                    <span>${p.bigBrandPrice.toLocaleString()}원</span>
+                                </div>
+                                <div class="flex justify-between items-center mt-1">
+                                    <span class="text-xs font-bold text-slate-700">이음 D2C 직거래가:</span>
+                                    <span class="text-base font-extrabold text-rose-500">${p.price.toLocaleString()}원 <span class="text-xs font-bold text-emerald-500">(${savePercent}% 절감)</span></span>
+                                </div>
+                                <div class="text-[9px] text-slate-400 mt-1.5 text-right">
+                                    개당 <strong>${unitPrice}원</strong> (합리적인 단위 가격)
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-slate-500 leading-normal mb-3 border-t border-slate-100 pt-3">${p.spec}</p>
+
+                            <!-- Reviews indicators -->
+                            <div class="flex items-center justify-between text-[11px] text-slate-400">
+                                <span class="flex items-center">
+                                    <svg class="w-3.5 h-3.5 text-amber-400 fill-amber-400 mr-1" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                    <strong>${p.rating}</strong> (${p.reviews}개 평가)
+                                </span>
+                                <span class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">유해 화학물질 미검출</span>
+                            </div>
+                        </div>
+
+                        <!-- Add to Cart & Buy Buttons in Card Footer -->
+                        <div class="bg-slate-50 border-t border-slate-100 p-4 grid grid-cols-2 gap-2">
+                            <button onclick="addToCart(${p.id}, 'single')" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold py-2.5 rounded-xl transition-all duration-150 flex items-center justify-center space-x-1.5">
+                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+                                <span>일반 장바구니</span>
+                            </button>
+                            <button onclick="addToCart(${p.id}, 'subscription')" class="bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold py-2.5 rounded-xl transition-all duration-150 flex items-center justify-center space-x-1.5 shadow-md shadow-rose-100">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.27 15H18"/></svg>
+                                <span>정기 배송 (10%↓)</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        // Category Filter Switcher Action
+        function filterCategory(cat) {
+            currentFilter = cat;
+            
+            // Remove active classes from all buttons
+            ['all', 'organic', 'ultra', 'tampon'].forEach(c => {
+                const btn = document.getElementById(`cat-${c}`);
+                if (btn) {
+                    btn.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all duration-150";
+                }
+            });
+
+            // Set active class
+            const activeBtn = document.getElementById(`cat-${cat}`);
+            if (activeBtn) {
+                activeBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-500 text-white transition-all duration-150";
+            }
+
+            renderProducts();
+        }
+
+        // Tab Switching Engine
+        function switchTab(tabId) {
+            currentTab = tabId;
+            
+            // Hide all tab sections
+            ['market', 'map', 'voucher', 'data'].forEach(t => {
+                const sec = document.getElementById(`section-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const mBtn = document.getElementById(`m-tab-btn-${t}`);
+                
+                if (sec) sec.className = 'hidden';
+                if (btn) btn.className = "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50";
+                if (mBtn) mBtn.className = "flex flex-col items-center space-y-1 text-slate-400 transition-colors duration-150";
+            });
+
+            // Show active tab section
+            const activeSec = document.getElementById(`section-${tabId}`);
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            const activeMBtn = document.getElementById(`m-tab-btn-${tabId}`);
+            
+            if (activeSec) activeSec.className = 'block';
+            if (activeBtn) activeBtn.className = "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 flex items-center space-x-2 bg-white text-rose-600 shadow-sm";
+            if (activeMBtn) activeMBtn.className = "flex flex-col items-center space-y-1 text-rose-500 transition-colors duration-150";
+        }
+
+        // Selected Free Pad Dispenser handler
+        function selectDispenser(id) {
+            const data = dispensers[id];
+            if (!data) return;
+            
+            // Hide placeholder, show details
+            const ph = document.getElementById('dispenser-placeholder');
+            if (ph) ph.classList.add('hidden');
+            
+            const detailBox = document.getElementById('dispenser-detail');
+            if (detailBox) detailBox.classList.remove('hidden');
+
+            // Inject dispenser data
+            document.getElementById('disp-title').innerText = data.title;
+            document.getElementById('disp-stock').innerText = data.stock;
+            document.getElementById('disp-id').innerText = data.id;
+            document.getElementById('disp-hours').innerText = data.hours;
+            document.getElementById('disp-loc').innerText = data.loc;
+
+            // Set state color indicator
+            const stockColor = document.getElementById('disp-stock-color');
+            if (stockColor) {
+                stockColor.className = `w-2.5 h-2.5 rounded-full ${data.stockColor}`;
+            }
+        }
+
+        // Interactive Cart Side Drawer Handler
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-drawer-overlay');
+            if (!drawer || !overlay) return;
+
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                renderCart();
+            } else {
+                drawer.classList.add('translate-x-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        // Add Product to Cart System
+        function addToCart(productId, type) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            orderType = type; // single or subscription
+            
+            const existingItem = cart.find(item => item.product.id === productId && item.type === type);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    product,
+                    type,
+                    quantity: 1
+                });
+            }
+
+            // Sync cart badge UI
+            updateCartBadge();
+            // Trigger customized toast notifications
+            const typeText = type === 'subscription' ? '정기 배송 주기가 예약' : '장바구니';
+            showToast('장바구니 추가', `${product.name}이 ${typeText}에 추가되었습니다.`);
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-badge');
+            if (!badge) return;
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+            badge.innerText = totalItems;
+        }
+
+        // Render Cart items list inside drawer
+        function renderCart() {
+            const container = document.getElementById('cart-items-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16 text-slate-400 text-xs">
+                        <svg class="w-12 h-12 mx-auto mb-3 opacity-30 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        <p>장바구니가 비어 있습니다.</p>
+                    </div>
+                `;
+                updatePricing(0, 0);
+                const freqBox = document.getElementById('frequency-selector-box');
+                if (freqBox) freqBox.classList.add('hidden');
+                return;
+            }
+
+            let subtotal = 0;
+            let discount = 0;
+            let hasSubscription = false;
+
+            cart.forEach((item, index) => {
+                const itemPrice = item.product.price * item.quantity;
+                subtotal += itemPrice;
+
+                let itemDiscount = 0;
+                if (item.type === 'subscription') {
+                    itemDiscount = Math.round(itemPrice * 0.1); // 10% auto discount for SME subscription
+                    discount += itemDiscount;
+                    hasSubscription = true;
+                }
+
+                const itemHtml = `
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex justify-between items-start space-x-3">
+                        <div class="flex-grow">
+                            <span class="text-[9px] font-bold ${item.type === 'subscription' ? 'bg-rose-100 text-rose-600' : 'bg-slate-200 text-slate-600'} px-1.5 py-0.5 rounded uppercase">
+                                ${item.type === 'subscription' ? '주기적 정기 구독' : '일회성 일반 구매'}
+                            </span>
+                            <h5 class="font-bold text-slate-800 text-xs mt-1 leading-tight">${item.product.name}</h5>
+                            <p class="text-[10px] text-slate-400 mt-0.5">${item.product.brand}</p>
+                            
+                            <!-- Quantity Controls -->
+                            <div class="flex items-center space-x-2 mt-3">
+                                <button onclick="changeQty(${index}, -1)" class="w-6 h-6 rounded bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 flex items-center justify-center font-bold text-xs">-</button>
+                                <span class="text-xs font-semibold w-6 text-center">${item.quantity}</span>
+                                <button onclick="changeQty(${index}, 1)" class="w-6 h-6 rounded bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 flex items-center justify-center font-bold text-xs">+</button>
+                            </div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <span class="text-xs font-bold text-slate-800">${itemPrice.toLocaleString()}원</span>
+                            ${itemDiscount > 0 ? `<p class="text-[10px] text-emerald-600 font-semibold mt-0.5">- ${itemDiscount.toLocaleString()}원 할인</p>` : ''}
+                            <button onclick="removeItem(${index})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold mt-2.5 block text-right ml-auto">삭제</button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += itemHtml;
+            });
+
+            // Show/Hide subscription delivery cycle box
+            const freqBox = document.getElementById('frequency-selector-box');
+            if (freqBox) {
+                if (hasSubscription) {
+                    freqBox.classList.remove('hidden');
+                } else {
+                    freqBox.classList.add('hidden');
+                }
+            }
+
+            updatePricing(subtotal, discount);
+        }
+
+        // Qty adjust
+        function changeQty(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartBadge();
+            renderCart();
+        }
+
+        // Remove from cart
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartBadge();
+            renderCart();
+        }
+
+        // Calculate and sync totals
+        function updatePricing(subtotal, discount) {
+            const finalTotal = subtotal - discount;
+
+            document.getElementById('cart-subtotal').innerText = `${subtotal.toLocaleString()}원`;
+            document.getElementById('cart-total').innerText = `${finalTotal.toLocaleString()}원`;
+
+            const discountRow = document.getElementById('discount-row');
+            if (discount > 0) {
+                if (discountRow) {
+                    discountRow.classList.remove('hidden');
+                    document.getElementById('cart-discount').innerText = `-${discount.toLocaleString()}원`;
+                }
+            } else {
+                if (discountRow) discountRow.classList.add('hidden');
+            }
+
+            // If selected method is voucher, highlight voucher balances
+            const payVoucherBtn = document.getElementById('pay-voucher');
+            const payNormalBtn = document.getElementById('pay-normal');
+            const checkoutBtnText = document.getElementById('checkout-btn-text');
+
+            if (paymentMethod === 'voucher') {
+                if (payVoucherBtn) payVoucherBtn.className = "py-2.5 rounded-xl text-xs font-bold border border-rose-300 bg-rose-50 text-rose-600 hover:bg-rose-100 transition-all duration-150";
+                if (payNormalBtn) payNormalBtn.className = "py-2.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-all duration-150";
+                if (checkoutBtnText) checkoutBtnText.innerText = "정부 바우처 카드 결제 완료";
+            } else {
+                if (payNormalBtn) payNormalBtn.className = "py-2.5 rounded-xl text-xs font-bold border border-slate-300 bg-slate-900 text-white hover:bg-slate-800 transition-all duration-150";
+                if (payVoucherBtn) payVoucherBtn.className = "py-2.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-all duration-150";
+                if (checkoutBtnText) checkoutBtnText.innerText = "일반 신용카드 결제 완료";
+            }
+        }
+
+        // Choose Payment Method Action
+        function setPaymentMethod(method) {
+            paymentMethod = method;
+            renderCart();
+        }
+
+        // Simulate real Checkout process
+        function checkout() {
+            if (cart.length === 0) {
+                showToast('결제 오류', '장바구니가 비어 있어 결제를 완료할 수 없습니다.');
+                return;
+            }
+
+            const totalQty = cart.reduce((acc, item) => acc + item.quantity, 0);
+            const subtotal = cart.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+            const discount = cart.reduce((acc, item) => acc + (item.type === 'subscription' ? Math.round((item.product.price * item.quantity) * 0.1) : 0), 0);
+            const finalTotal = subtotal - discount;
+
+            if (paymentMethod === 'voucher') {
+                if (voucherBalance < finalTotal) {
+                    showToast('바우처 한도 초과', `바우처 지원 한도 초과! 부족한 ${ (finalTotal - voucherBalance).toLocaleString() }원은 국민행복카드 자기부담금으로 결제됩니다.`);
+                    voucherBalance = 0;
+                } else {
+                    voucherBalance -= finalTotal;
+                    showToast('바우처 결제 성공', `성공적으로 이음(IEUM) 케어 바우처 원스톱 결제가 완료되었습니다. (바우처 차감: ${finalTotal.toLocaleString()}원)`);
+                }
+                
+                // Sync UI voucher balances
+                document.getElementById('voucher-header-balance').innerText = voucherBalance.toLocaleString();
+                document.getElementById('voucher-card-balance').innerText = voucherBalance.toLocaleString();
+            } else {
+                showToast('일반 결제 성공', `성공적으로 일반 신용카드 결제가 승인되었습니다. (총액: ${finalTotal.toLocaleString()}원)`);
+            }
+
+            // Reset Cart state
+            cart = [];
+            updateCartBadge();
+            toggleCartDrawer();
+            
+            // Switch back to shop or thank you message
+            switchTab('market');
+        }
+
+        // Reset the simulated monthly voucher balance (Rich simulation testing)
+        function resetVoucherSimulation() {
+            voucherBalance = 14000;
+            document.getElementById('voucher-header-balance').innerText = voucherBalance.toLocaleString();
+            document.getElementById('voucher-card-balance').innerText = voucherBalance.toLocaleString();
+            showToast('복지 바우처 리셋', '바우처 지원금이 이달 기본 한도인 14,000원으로 재충전되었습니다.');
+        }
+
+        // Beautiful Dynamic Notification System
+        function showToast(title, message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            if (!toast || !toastMsg) return;
+
+            toastMsg.innerHTML = `<strong>[${title}]</strong> ${message}`;
+            
+            // Show toast animation
+            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            // Hide after 4 seconds
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
